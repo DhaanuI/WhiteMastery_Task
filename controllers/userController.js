@@ -2,6 +2,7 @@ const moment = require("moment");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { StudModel } = require("../model/StudModel");
+require("dotenv").config();
 
 
 const userRegister = async (req, res) => {

@@ -2,6 +2,7 @@ const moment = require("moment");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { UnivModel } = require("../model/UnivModel");
+require("dotenv").config();
 
 
 const univRegister = async (req, res) => {
