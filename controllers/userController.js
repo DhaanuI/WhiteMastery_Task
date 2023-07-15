@@ -95,15 +95,24 @@ const userDelete = async (req, res) => {
 
 
 const userGet = async (req, res) => {
+    // page to be passed by user
+    // .skip((page-1)*2).limit(3)   ---- > Pagination
     try {
         let data;
         const id = req.query.id;
+        const page = req.query.page
 
-        if (id) {
+        // limit per page is 3 students
+        if (id && page) {
+            data = await StudModel.find({ _id: id }).skip((page - 1) * 2).limit(3).populate("university");
+        } else if (page) {
+            data = await StudModel.find().skip((page - 1) * 2).limit(3).populate("university");
+        } else if (id) {
             data = await StudModel.find({ _id: id }).populate("university");
-        } else {
-            data = await StudModel.find().populate("university");
         }
+        else data = await StudModel.find().populate("university");
+
+
         res.status(200).send({ "Students": data })
     }
     catch (err) {
