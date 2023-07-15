@@ -16,7 +16,7 @@ const univRegister = async (req, res) => {
             let dateFormat = moment().format('D-MM-YYYY');
 
             bcrypt.hash(password, 5, async function (err, hash) {
-                const data = new UnivModel({ name, email, password, location, programs, description, phone, registeredDate: dateFormat })
+                const data = new UnivModel({ name, email, password: hash, location, programs, description, phone, registeredDate: dateFormat })
                 await data.save()
                 res.status(201).send({ "message": "University Registered" })
             });
@@ -37,7 +37,7 @@ const univLogin = async (req, res) => {
     try {
         bcrypt.compare(password, data.password, function (err, result) {
             if (result) {
-                var token = jwt.sign({ UniversityID: data._id }, process.env.key);
+                var token = jwt.sign({ UniversityID: data._id }, process.env.key, { expiresIn: 3 * 60 * 60 });
 
                 res.status(201).send({
                     "message": "Validation done",

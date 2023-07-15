@@ -37,7 +37,7 @@ const userLogin = async (req, res) => {
     try {
         bcrypt.compare(password, data.password, function (err, result) {
             if (result) {
-                var token = jwt.sign({ StudentID: data._id }, process.env.key);
+                var token = jwt.sign({ StudentID: data._id }, process.env.key, { expiresIn: 3 * 60 * 60 });
 
                 res.status(201).send({
                     "message": "Validation done",
