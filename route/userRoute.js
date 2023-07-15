@@ -1,7 +1,8 @@
 const express = require("express");
-const { userRegister, userLogin, userPatch, userDelete, userGet } = require("../controllers/userController")
+const { userRegister, userLogin, userPatch, userDelete, userGet } = require("../controllers/userController");
 const userRoute = express.Router();
 userRoute.use(express.json());
+const { authenticate } = require("../middleware/authenticate.middleware");
 
 
 // to register student and then hashing password using Bcrypt
@@ -12,16 +13,19 @@ userRoute.post("/register", userRegister)
 userRoute.post("/login", userLogin)
 
 
+// get particular Student or all students
+userRoute.get("/", userGet)
+
+
+userRoute.use(authenticate)
+
+
 // update particular Student 
 userRoute.patch("/update/:id", userPatch)
 
 
 // delete particular Student 
 userRoute.delete("/delete/:id", userDelete)
-
-
-// get particular Student or all students
-userRoute.get("/", userGet)
 
 
 module.exports = {

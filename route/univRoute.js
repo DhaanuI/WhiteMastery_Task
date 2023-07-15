@@ -2,6 +2,7 @@ const express = require("express");
 const { univRegister, univLogin, univPatch, univDelete, univGet } = require("../controllers/univController")
 const univRoute = express.Router();
 univRoute.use(express.json());
+const {authenticate}= require("../middleware/authenticate.middleware")
 
 
 // to register University and then hashing password using Bcrypt
@@ -12,16 +13,19 @@ univRoute.post("/register", univRegister)
 univRoute.post("/login", univLogin)
 
 
+// get particular University or all 
+univRoute.get("/", univGet)
+
+
+univRoute.use(authenticate)
+
+
 // update particular University 
 univRoute.patch("/update/:id", univPatch)
 
 
 // delete particular University 
 univRoute.delete("/delete/:id", univDelete)
-
-
-// get particular University or all 
-univRoute.get("/", univGet)
 
 
 module.exports = {

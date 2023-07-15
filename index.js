@@ -6,6 +6,7 @@ require("dotenv").config()
 const { connection } = require("./config/db")
 const { userRoute } = require("./route/userRoute")
 const { univRoute } = require("./route/univRoute")
+const { eventRoute } = require("./route/eventRoute")
 
 
 app.get("/", (req, res) => {
@@ -15,6 +16,7 @@ app.get("/", (req, res) => {
 
 app.use("/students", userRoute)
 app.use("/university", univRoute)
+app.use("/events", eventRoute)
 
 
 app.listen(process.env.port, async () => {
