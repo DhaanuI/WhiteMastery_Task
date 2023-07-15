@@ -61,8 +61,13 @@ const univPatch = async (req, res) => {
     const ID = req.params.id;
     const payload = req.body;
     try {
-        await UnivModel.findByIdAndUpdate({ _id: ID }, payload)
-        res.send({ "message": "Database modified" })
+        if (ID === payload.userID) {
+            await UnivModel.findByIdAndUpdate({ _id: ID }, payload)
+            res.send({ "message": "Database modified" })
+        }
+        else {
+            res.send({ "message": "Not authorized" })
+        }
     }
     catch (err) {
         console.log(err)
@@ -74,8 +79,13 @@ const univPatch = async (req, res) => {
 const univDelete = async (req, res) => {
     const ID = req.params.id;
     try {
-        await UnivModel.findByIdAndDelete({ _id: ID })
-        res.send({ "message": "Database modified" })
+        if (ID === req.body.userID) {
+            await UnivModel.findByIdAndDelete({ _id: ID })
+            res.send({ "message": "Database modified" })
+        }
+        else {
+            res.send({ "message": "Not authorized" })
+        }
     }
     catch (err) {
         console.log(err)

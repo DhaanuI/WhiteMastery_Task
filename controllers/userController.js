@@ -61,8 +61,13 @@ const userPatch = async (req, res) => {
     const ID = req.params.id;
     const payload = req.body;
     try {
-        await StudModel.findByIdAndUpdate({ _id: ID }, payload)
-        res.send({ "message": "Database modified" })
+        if (ID === payload.userID) {
+            await StudModel.findByIdAndUpdate({ _id: ID }, payload)
+            res.send({ "message": "Database modified" })
+        }
+        else {
+            res.send({ "message": "Not authorized" })
+        }
     }
     catch (err) {
         console.log(err)
@@ -74,8 +79,13 @@ const userPatch = async (req, res) => {
 const userDelete = async (req, res) => {
     const ID = req.params.id;
     try {
-        await StudModel.findByIdAndDelete({ _id: ID })
-        res.send({ "message": "Database modified" })
+        if (ID === req.body.userID) {
+            await StudModel.findByIdAndDelete({ _id: ID })
+            res.send({ "message": "Database modified" })
+        }
+        else {
+            res.send({ "message": "Not authorized" })
+        }
     }
     catch (err) {
         console.log(err)
