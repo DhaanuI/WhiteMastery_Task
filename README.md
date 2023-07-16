@@ -1,6 +1,10 @@
 # Nodejs Application
 
+## Deployed Backend using Cyclic : https://brave-blue-handbag.cyclic.app/
+
 APIs implemented:
+
+api - https://brave-blue-handbag.cyclic.app/
 
 | METHOD | ENDPOINT | DESCRIPTION | STATUS CODE |
 | --- | --- | --- | --- |
