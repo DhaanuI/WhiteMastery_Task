@@ -7,6 +7,7 @@ const studSchema = mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     subjects: [String],
+    profilePicture: { type: String },
     university: { type: mongoose.Schema.Types.ObjectId, ref: UnivModel },
     registeredDate: { type: String },            // note down the date registered
 })

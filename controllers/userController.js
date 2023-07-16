@@ -1,12 +1,29 @@
 const moment = require("moment");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const sharp = require('sharp');
+const multer = require("multer")
+const path = require("path")
 const { StudModel } = require("../model/StudModel");
 require("dotenv").config();
 
 
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "./uploads")
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname))
+    }
+})
+
+
+const upload = multer({ storage: storage })
+
+
 const userRegister = async (req, res) => {
     const { name, email, password, subjects, university } = req.body
+
     const studentFound = await StudModel.findOne({ email })
     if (studentFound) {
         res.status(409).send({ "message": "Already student registered" })
@@ -14,7 +31,6 @@ const userRegister = async (req, res) => {
     else {
         try {
             let dateFormat = moment().format('D-MM-YYYY');
-
             bcrypt.hash(password, 5, async function (err, hash) {
                 const data = new StudModel({ name, email, password: hash, subjects, university, registeredDate: dateFormat })
                 await data.save()
@@ -24,6 +40,29 @@ const userRegister = async (req, res) => {
         catch (err) {
             res.status(500).send({ "ERROR": err })
         }
+    }
+}
+
+
+const userProfile = async (req, res) => {
+    const ID = req.params.id;
+
+    // Access the uploaded file details through req.file
+    const filePath = req.file.path;
+
+    // Generate a low-quality version of the image using sharp library
+    const lowQualityPath = './uploads/low-quality-' + req.file.filename; // Path for the low-quality version
+
+    try {
+        await sharp(filePath)
+            .resize(200) // Example: Resize the image to a width of 200 pixels
+            .toFile(lowQualityPath);
+
+        await StudModel.findByIdAndUpdate({ _id: ID }, { profilePicture: lowQualityPath })
+        res.send({ "message": "Profile Picture updated" })
+    }
+    catch (err) {
+        res.status(500).send({ "ERROR": err })
     }
 }
 
@@ -122,5 +161,5 @@ const userGet = async (req, res) => {
 
 
 module.exports = {
-    userRegister, userLogin, userPatch, userDelete, userGet
+    userRegister, userLogin, userPatch, userDelete, userGet, upload, userProfile
 }
