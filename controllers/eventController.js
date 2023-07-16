@@ -1,6 +1,7 @@
 
 const { UnivModel } = require("../model/UnivModel");
 const { EventModel } = require("../model/EventModel");
+const { logger } = require("../middleware/logger.middleware")
 
 
 const eventCreate = async (req, res) => {
@@ -9,9 +10,11 @@ const eventCreate = async (req, res) => {
     try {
         const data = new EventModel({ title, description, date, university: req.body.userID })
         await data.save()
+        logger.info('Event added');
         res.status(201).send({ "message": "Event Registered" })
     }
     catch (err) {
+        logger.error('Error occurred during Event creation ', { "error": err });
         res.status(400).send({ "ERROR": err })
     }
 }
@@ -25,7 +28,7 @@ const eventPatch = async (req, res) => {
         res.send({ "message": "Event modified" })
     }
     catch (err) {
-        console.log(err)
+        logger.error('Updating Event info failed');
         res.status(400).send({ "message": "error" })
     }
 }
@@ -38,7 +41,7 @@ const eventDelete = async (req, res) => {
         res.send({ "message": "Event Deleted" })
     }
     catch (err) {
-        console.log(err)
+        logger.error('DELETE failed');
         res.status(400).send({ "message": "error" })
     }
 }
@@ -50,7 +53,7 @@ const eventGet = async (req, res) => {
         res.status(200).send({ "Events": events })
     }
     catch (err) {
-        console.log(err)
+        logger.error('Unable to pull Events');
         res.status(400).send({ "message": "error" })
     }
 }

@@ -7,9 +7,9 @@
 // Pagination
 // File upload
 // Node mailer
+// Data validation 
 
 
 Pending
 // Logging
-// Data validation - Partial
 // Documentation - Optional

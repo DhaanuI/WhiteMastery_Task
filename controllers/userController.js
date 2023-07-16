@@ -11,6 +11,8 @@ require("dotenv").config();
 
 const { sendEmail } = require("../nodemailer/sendingEmail")
 
+const { logger } = require("../middleware/logger.middleware")
+
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -30,13 +32,15 @@ const userRegister = async (req, res) => {
 
     // email validation using Express-Validation
     if (!errors.isEmpty()) {
-        return res.status(400).json({ "message": "Email is INVALID" });
+        logger.error('Email is INVALID');
+        return res.status(400).json({ "message": "Email is INVALID" });   
     }
 
     const { name, email, password, subjects, university } = req.body
 
     const studentFound = await StudModel.findOne({ email })
     if (studentFound) {
+        logger.warn('Already student registered');
         res.status(409).send({ "message": "Already student registered" })
     }
     else {
@@ -60,11 +64,13 @@ const userRegister = async (req, res) => {
                     We're here to help!\n\n
                     Good Luck.`
                 });
-
+                logger.info('User added');
                 res.status(201).send({ "message": "Student Registered" })
+                
             });
         }
         catch (err) {
+            logger.error('Error occurred during user post', { error: err });
             res.status(400).send({ "ERROR": err })
         }
     }
@@ -86,9 +92,11 @@ const userProfile = async (req, res) => {
             .toFile(lowQualityPath);
 
         await StudModel.findByIdAndUpdate({ _id: ID }, { profilePicture: lowQualityPath })
-        res.send({ "message": "Profile Picture updated" })
+        logger.info('Profile Picture updated');
+         res.send({ "message": "Profile Picture updated" })
     }
     catch (err) {
+        logger.error('Error during Prof pic update');
         res.status(400).send({ "ERROR": err })
     }
 }
@@ -99,19 +107,21 @@ const userLogin = async (req, res) => {
 
     // email validation using Express-Validation
     if (!errors.isEmpty()) {
+        logger.error('Email is INVALID');
         return res.status(400).json({ "message": "Email is INVALID" });
     }
 
     const { email, password } = req.body
     let data = await StudModel.findOne({ email })
     if (!data) {
+        logger.warn('No user found');
         return res.send({ "message": "No user found" })
     }
     try {
         bcrypt.compare(password, data.password, function (err, result) {
             if (result) {
                 var token = jwt.sign({ StudentID: data._id }, process.env.key, { expiresIn: 3 * 60 * 60 });
-
+                logger.info('Validation done during LOGIN');
                 res.status(201).send({
                     "message": "Validation done",
                     "token": token,
@@ -120,11 +130,13 @@ const userLogin = async (req, res) => {
                 })
             }
             else {
+                logger.warn('Login failed');
                 res.status(401).send({ "message": "INVALID credentials" })
             }
         });
     }
     catch (err) {
+        logger.error('Login failed');
         res.status(400).send({ "ERROR": err })
     }
 }
@@ -136,14 +148,16 @@ const userPatch = async (req, res) => {
     try {
         if (ID === payload.userID) {
             await StudModel.findByIdAndUpdate({ _id: ID }, payload)
+            logger.info('Updated user info');
             res.send({ "message": "Database modified" })
         }
         else {
+            logger.warn('Not authorized');
             res.send({ "message": "Not authorized" })
         }
     }
     catch (err) {
-        console.log(err)
+        logger.error('Updating user info failed');
         res.status(400).send({ "message": "error" })
     }
 }
@@ -154,14 +168,16 @@ const userDelete = async (req, res) => {
     try {
         if (ID === req.body.userID) {
             await StudModel.findByIdAndDelete({ _id: ID })
+            logger.info('deleted user info');
             res.send({ "message": "Database modified" })
         }
         else {
+            logger.warn('Not authorized');
             res.send({ "message": "Not authorized" })
         }
     }
     catch (err) {
-        console.log(err)
+        logger.error('DELETE failed');
         res.status(400).send({ "message": "error" })
     }
 }
@@ -189,6 +205,7 @@ const userGet = async (req, res) => {
         res.status(200).send({ "Students": data })
     }
     catch (err) {
+        logger.error('Unable to fetch students');
         res.status(400).send({ "ERROR": err })
     }
 }

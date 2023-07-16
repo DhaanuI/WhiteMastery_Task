@@ -8,11 +8,16 @@ const { userRoute } = require("./route/userRoute")
 const { univRoute } = require("./route/univRoute")
 const { eventRoute } = require("./route/eventRoute")
 
+const {logRequestDetails}= require("./middleware/logger.middleware")
+
 
 app.get("/", (req, res) => {
     res.send("Welcome to Backend")
 })
 
+
+// Apply the middleware to all routes
+app.use(logRequestDetails);
 
 app.use("/students", userRoute)
 app.use("/university", univRoute)
