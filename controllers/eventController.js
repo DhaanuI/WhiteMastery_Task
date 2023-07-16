@@ -12,7 +12,7 @@ const eventCreate = async (req, res) => {
         res.status(201).send({ "message": "Event Registered" })
     }
     catch (err) {
-        res.status(500).send({ "ERROR": err })
+        res.status(400).send({ "ERROR": err })
     }
 }
 
@@ -26,7 +26,7 @@ const eventPatch = async (req, res) => {
     }
     catch (err) {
         console.log(err)
-        res.send({ "message": "error" })
+        res.status(400).send({ "message": "error" })
     }
 }
 
@@ -39,7 +39,7 @@ const eventDelete = async (req, res) => {
     }
     catch (err) {
         console.log(err)
-        res.send({ "message": "error" })
+        res.status(400).send({ "message": "error" })
     }
 }
 
@@ -47,11 +47,11 @@ const eventDelete = async (req, res) => {
 const eventGet = async (req, res) => {
     try {
         const events = await EventModel.find().populate("university")
-        res.send({ "Events": events })
+        res.status(200).send({ "Events": events })
     }
     catch (err) {
         console.log(err)
-        res.send({ "message": "error" })
+        res.status(400).send({ "message": "error" })
     }
 }
 

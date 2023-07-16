@@ -4,6 +4,8 @@ const jwt = require("jsonwebtoken");
 const sharp = require('sharp');
 const multer = require("multer")
 const path = require("path")
+const { validationResult } = require('express-validator');
+
 const { StudModel } = require("../model/StudModel");
 require("dotenv").config();
 
@@ -24,6 +26,13 @@ const upload = multer({ storage: storage })
 
 
 const userRegister = async (req, res) => {
+    const errors = validationResult(req);
+
+    // email validation using Express-Validation
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ "message": "Email is INVALID" });
+    }
+
     const { name, email, password, subjects, university } = req.body
 
     const studentFound = await StudModel.findOne({ email })
@@ -32,6 +41,7 @@ const userRegister = async (req, res) => {
     }
     else {
         try {
+
             let dateFormat = moment().format('D-MM-YYYY');
             bcrypt.hash(password, 5, async function (err, hash) {
                 const data = new StudModel({ name, email, password: hash, subjects, university, registeredDate: dateFormat })
@@ -41,26 +51,21 @@ const userRegister = async (req, res) => {
                 await sendEmail({
                     email: email,
                     subject: `Account registered`,
-                    body: `Hello ${name},
-                    Welcome to our platform! We are excited to have you join our community. Here are your account details:
-
-                    Username: ${email}
-
-                    Please take a moment to complete your profile and provide any additional information that will help us personalize your experience. 
-                    You can access your profile by logging into your account and navigating to the profile settings page.
-
-
-                    If you have any questions or need assistance, please don't hesitate to reach out to our support team,
-                     We're here to help!
-
-                     Good Luck.`
+                    body: `Hello ${name},\n
+                    Welcome to our platform! We are excited to have you join our community. Here are your account details:\n\n
+                    Username: ${email}\n\n
+                    Please take a moment to complete your profile and provide any additional information that will help us personalize your experience.\n
+                    You can access your profile by logging into your account and navigating to the profile settings page.\n\n
+                    If you have any questions or need assistance, please don't hesitate to reach out to our support team.\n
+                    We're here to help!\n\n
+                    Good Luck.`
                 });
 
                 res.status(201).send({ "message": "Student Registered" })
             });
         }
         catch (err) {
-            res.status(500).send({ "ERROR": err })
+            res.status(400).send({ "ERROR": err })
         }
     }
 }
@@ -84,12 +89,19 @@ const userProfile = async (req, res) => {
         res.send({ "message": "Profile Picture updated" })
     }
     catch (err) {
-        res.status(500).send({ "ERROR": err })
+        res.status(400).send({ "ERROR": err })
     }
 }
 
 
 const userLogin = async (req, res) => {
+    const errors = validationResult(req);
+
+    // email validation using Express-Validation
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ "message": "Email is INVALID" });
+    }
+
     const { email, password } = req.body
     let data = await StudModel.findOne({ email })
     if (!data) {
@@ -113,7 +125,7 @@ const userLogin = async (req, res) => {
         });
     }
     catch (err) {
-        res.status(500).send({ "ERROR": err })
+        res.status(400).send({ "ERROR": err })
     }
 }
 
@@ -132,7 +144,7 @@ const userPatch = async (req, res) => {
     }
     catch (err) {
         console.log(err)
-        res.send({ "message": "error" })
+        res.status(400).send({ "message": "error" })
     }
 }
 
@@ -150,7 +162,7 @@ const userDelete = async (req, res) => {
     }
     catch (err) {
         console.log(err)
-        res.send({ "message": "error" })
+        res.status(400).send({ "message": "error" })
     }
 }
 
@@ -177,7 +189,7 @@ const userGet = async (req, res) => {
         res.status(200).send({ "Students": data })
     }
     catch (err) {
-        res.status(500).send({ "ERROR": err })
+        res.status(400).send({ "ERROR": err })
     }
 }
 

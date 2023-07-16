@@ -22,7 +22,7 @@ const univRegister = async (req, res) => {
             });
         }
         catch (err) {
-            res.status(500).send({ "ERROR": err })
+            res.status(400).send({ "ERROR": err })
         }
     }
 }
@@ -52,7 +52,7 @@ const univLogin = async (req, res) => {
         });
     }
     catch (err) {
-        res.status(500).send({ "ERROR": err })
+        res.status(400).send({ "ERROR": err })
     }
 }
 
@@ -71,7 +71,7 @@ const univPatch = async (req, res) => {
     }
     catch (err) {
         console.log(err)
-        res.send({ "message": "error" })
+        res.status(400).send({ "message": "error" })
     }
 }
 
@@ -89,7 +89,7 @@ const univDelete = async (req, res) => {
     }
     catch (err) {
         console.log(err)
-        res.send({ "message": "error" })
+        res.status(400).send({ "message": "error" })
     }
 }
 
@@ -107,7 +107,7 @@ const univGet = async (req, res) => {
         res.status(200).send({ "Universitys": data })
     }
     catch (err) {
-        res.status(500).send({ "ERROR": err })
+        res.status(400).send({ "ERROR": err })
     }
 }
 
