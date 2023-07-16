@@ -5,10 +5,11 @@
 // JWT Done
 // Events Add, Update, Delete
 // Pagination
+// File upload
+// Node mailer
+
 
 Pending
-// Node mailer
 // Logging
-// File upload
 // Data validation - Partial
 // Documentation - Optional

@@ -7,6 +7,8 @@ const path = require("path")
 const { StudModel } = require("../model/StudModel");
 require("dotenv").config();
 
+const { sendEmail } = require("../nodemailer/sendingEmail")
+
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -34,6 +36,26 @@ const userRegister = async (req, res) => {
             bcrypt.hash(password, 5, async function (err, hash) {
                 const data = new StudModel({ name, email, password: hash, subjects, university, registeredDate: dateFormat })
                 await data.save()
+
+
+                await sendEmail({
+                    email: email,
+                    subject: `Account registered`,
+                    body: `Hello ${name},
+                    Welcome to our platform! We are excited to have you join our community. Here are your account details:
+
+                    Username: ${email}
+
+                    Please take a moment to complete your profile and provide any additional information that will help us personalize your experience. 
+                    You can access your profile by logging into your account and navigating to the profile settings page.
+
+
+                    If you have any questions or need assistance, please don't hesitate to reach out to our support team,
+                     We're here to help!
+
+                     Good Luck.`
+                });
+
                 res.status(201).send({ "message": "Student Registered" })
             });
         }
